@@ -14,7 +14,7 @@ class Product:
 
 
 class Category:
-    """Класс для категории"""
+    """Класс для категории """
 
     category_count = 0
     product_count = 0
