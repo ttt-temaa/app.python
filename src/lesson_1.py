@@ -14,24 +14,23 @@ class Product:
 
 
 class Category:
-    """Класс для категории """
+    """Класс для представления категории"""
 
     category_count = 0
     product_count = 0
     name: str
     description: str
-    products: list | None = None
+    products: list[Product]
 
     def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
-        self.products = products if products else []
+        self.products = products if products is not None else []
 
         Category.category_count += 1
         Category.product_count += len(self.products)
 
     def add_product(self, product: Product):
         """Добавление продукта в категорию"""
-
         self.products.append(product)
         Category.product_count += 1

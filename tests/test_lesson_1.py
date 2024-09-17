@@ -77,7 +77,7 @@ def test_add_multiple_products():
 
 
 def test_empty_category():
-    """Тест инициализации пустой категории """
+    """Тест инициализации пустой категории"""
     category = Category("Empty Category", "No products")
     assert len(category.products) == 0
 
