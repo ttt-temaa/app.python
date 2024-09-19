@@ -11,6 +11,22 @@ def test_product_initialization():
     assert product.quantity == 10
 
 
+def test_product_price_setter_positive():
+    """Тест работы сеттера цены с корректным значением"""
+
+    product = Product("Product", "Description", 100.0, 10)
+    product.price = 200.0
+    assert product.price == 200.0
+
+
+def test_product_price_setter_negative():
+    """Тест работы сеттера цены с отрицательным значением"""
+
+    product = Product("Product", "Description", 100.0, 10)
+    product.price = -50.0
+    assert product.price == 100.0
+
+
 def test_category_initialization():
     """Тест инициализации категории без продуктов"""
 
@@ -43,6 +59,7 @@ def test_add_product_to_category():
 
 def test_product_count():
     """Тест подсчета продуктов"""
+
     Category.product_count = 0
     category = Category("Test Category", "Test Description", [])
     product = Product("Test Product", "Test Description", 100.0, 10)
@@ -52,12 +69,13 @@ def test_product_count():
 
 def test_add_multiple_products():
     """Тест добавления нескольких продуктов в категорию"""
+
     Category.product_count = 0
     category = Category("Test Category", "Test Description", [])
 
-    # Добавляем несколько продуктов
     product1 = Product("Product1", "Description1", 200.0, 15)
     product2 = Product("Product2", "Description2", 300.0, 20)
+
     category.add_product(product1)
     category.add_product(product2)
 
@@ -69,18 +87,13 @@ def test_add_multiple_products():
 
 def test_empty_category():
     """Тест инициализации пустой категории"""
+
     category = Category("Empty Category", "No products")
     assert len(category._products) == 0
 
 
-def test_product_negative_price():
-    """Тест проверки работы с отрицательной ценой продукта"""
-    product = Product("Test Product", "Test Description", 100.0, 10)
-    product.price = -50.0
-    assert product.price == 100.0
-
-
 def test_product_negative_quantity():
     """Тест проверки работы с отрицательным количеством продукта"""
+
     product = Product("Test Product", "Test Description", 100.0, -5)
     assert product.quantity == -5
