@@ -4,7 +4,7 @@ class Product:
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price  # Приватный атрибут
+        self.__price = price  #приват
         self.quantity = quantity
 
     @property
