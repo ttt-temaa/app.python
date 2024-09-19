@@ -1,37 +1,51 @@
 class Product:
     """Класс для представления продукта"""
 
-    name: str
-    description: str
-    price: float
-    quantity: int
-
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.price = price
+        self._price = price  # приват
         self.quantity = quantity
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, new_price):
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self._price = new_price
+
+    @classmethod
+    def new_product(cls, data):
+        return cls(data["name"], data["description"],
+                   data["price"], data["quantity"])
 
 
 class Category:
-    """Класс для категории """
+    """Класс для представления категории"""
 
-    category_count = 0
     product_count = 0
-    name: str
-    description: str
-    products: list | None = None
 
     def __init__(self, name, description, products=None):
         self.name = name
         self.description = description
-        self.products = products if products else []
-
-        Category.category_count += 1
-        Category.product_count += len(self.products)
+        self._products = products if products is not None else []
+        Category.product_count += len(self._products)
 
     def add_product(self, product: Product):
         """Добавление продукта в категорию"""
-
-        self.products.append(product)
+        self._products.append(product)
         Category.product_count += 1
+
+    @property
+    def products(self):
+        """Геттер для списка продуктов"""
+        return "\n".join(
+            [
+                f"{p.name}, {p.price} руб. Остаток: {p.quantity} шт."
+                for p in self._products
+            ]
+        )
