@@ -97,3 +97,26 @@ def test_product_negative_quantity():
 
     product = Product("Test Product", "Test Description", 100.0, -5)
     assert product.quantity == -5
+
+
+def test_product_str():
+    """Тест строкового представления объекта Product."""
+    product = Product("Test Product", "Test Description", 100.0, 10)
+    assert str(product) == "Test Product, 100.0 руб. Остаток: 10 шт."
+
+
+def test_category_str():
+    """Тест строкового представления объекта Category."""
+    product1 = Product("Test Product 1", "Test Description 1", 100.0, 10)
+    product2 = Product("Test Product 2", "Test Description 2", 50.0, 5)
+    category = Category("Test Category",
+                        "Test Description",
+                        [product1, product2])
+    assert str(category) == "Test Category, количество продуктов: 15 шт."
+
+
+def test_product_add():
+    """Тест магического метода сложения для объектов Product."""
+    product1 = Product("Test Product 1", "Test Description 1", 100.0, 10)
+    product2 = Product("Test Product 2", "Test Description 2", 50.0, 5)
+    assert product1 + product2 == 1250.0

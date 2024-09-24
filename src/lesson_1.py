@@ -4,8 +4,11 @@ class Product:
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
-        self.__price = price  #приват
+        self.__price = price  # приват
         self.quantity = quantity
+
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     @property
     def price(self):
@@ -25,6 +28,11 @@ class Product:
                    data["price"],
                    data["quantity"])
 
+    def __add__(self, other):
+        if isinstance(other, Product):
+            return self.price * self.quantity + other.price * other.quantity
+        return NotImplemented
+
 
 class Category:
     """Класс для представления категории"""
@@ -37,6 +45,10 @@ class Category:
         self._products = products if products is not None else []
         Category.product_count += len(self._products)
 
+    def __str__(self):
+        total_quantity = sum([p.quantity for p in self._products])
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
+
     def add_product(self, product: Product):
         """Добавление продукта в категорию"""
         self._products.append(product)
@@ -45,9 +57,23 @@ class Category:
     @property
     def products(self):
         """Геттер для списка продуктов"""
-        return "\n".join(
-            [
-                f"{p.name}, {p.price} руб. Остаток: {p.quantity} шт."
-                for p in self._products
-            ]
-        )
+        return "\n".join([str(p) for p in self._products])
+
+    def __iter__(self):
+        return CategoryIterator(self)
+
+
+class CategoryIterator:
+    def __init__(self, category):
+        self._category = category
+        self._index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._index < len(self._category._products):
+            product = self._category._products[self._index]
+            self._index += 1
+            return product
+        raise StopIteration
