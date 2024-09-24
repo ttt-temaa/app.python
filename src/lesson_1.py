@@ -12,7 +12,7 @@ class Product:
 
     @property
     def price(self):
-        return self.__price
+        return self.__priceммм
 
     @price.setter
     def price(self, new_price):
