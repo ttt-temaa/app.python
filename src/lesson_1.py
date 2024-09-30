@@ -12,7 +12,7 @@ class Product:
 
     @property
     def price(self):
-        return self.__priceммм
+        return self.__price
 
     @price.setter
     def price(self, new_price):
@@ -21,17 +21,50 @@ class Product:
         else:
             self.__price = new_price
 
-    @classmethod
-    def new_product(cls, data):
-        return cls(data["name"],
-                   data["description"],
-                   data["price"],
-                   data["quantity"])
-
     def __add__(self, other):
-        if isinstance(other, Product):
-            return self.price * self.quantity + other.price * other.quantity
-        return NotImplemented
+        if type(self) is not type(other):
+            raise TypeError("Нельзя складывать объекты разных типов")
+        return self.price * self.quantity + other.price * other.quantity
+
+
+class Smartphone(Product):
+    """Класс для представления смартфона"""
+
+    def __init__(
+        self,
+            name,
+            description,
+            price,
+            quantity,
+            efficiency,
+            model,
+            memory,
+            color
+    ):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    """Класс для представления газонной травы"""
+
+    def __init__(
+        self,
+            name,
+            description,
+            price,
+            quantity,
+            country,
+            germination_period,
+            color
+    ):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 
 class Category:
@@ -50,7 +83,13 @@ class Category:
         return f"{self.name}, количество продуктов: {total_quantity} шт."
 
     def add_product(self, product: Product):
-        """Добавление продукта в категорию"""
+        """Добавление продукта в категорию с проверкой на тип"""
+        if not isinstance(product, Product):
+            raise TypeError(
+                "Можно добавлять"
+                " только объекты класса"
+                " Product или его наследников"
+            )
         self._products.append(product)
         Category.product_count += 1
 
@@ -58,22 +97,3 @@ class Category:
     def products(self):
         """Геттер для списка продуктов"""
         return "\n".join([str(p) for p in self._products])
-
-    def __iter__(self):
-        return CategoryIterator(self)
-
-
-class CategoryIterator:
-    def __init__(self, category):
-        self._category = category
-        self._index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self._index < len(self._category._products):
-            product = self._category._products[self._index]
-            self._index += 1
-            return product
-        raise StopIteration

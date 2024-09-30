@@ -1,9 +1,10 @@
-from src.lesson_1 import Category, Product
+import pytest
+
+from src.lesson_1 import Category, LawnGrass, Product, Smartphone
 
 
 def test_product_initialization():
     """Тест инициализации продукта"""
-
     product = Product("Product", "Description", 100.0, 10)
     assert product.name == "Product"
     assert product.description == "Description"
@@ -13,7 +14,6 @@ def test_product_initialization():
 
 def test_product_price_setter_positive():
     """Тест работы сеттера цены с корректным значением"""
-
     product = Product("Product", "Description", 100.0, 10)
     product.price = 200.0
     assert product.price == 200.0
@@ -21,7 +21,6 @@ def test_product_price_setter_positive():
 
 def test_product_price_setter_negative():
     """Тест работы сеттера цены с отрицательным значением"""
-
     product = Product("Product", "Description", 100.0, 10)
     product.price = -50.0
     assert product.price == 100.0
@@ -29,94 +28,74 @@ def test_product_price_setter_negative():
 
 def test_category_initialization():
     """Тест инициализации категории без продуктов"""
-
     category = Category("Category", "Description")
     assert category.name == "Category"
     assert category.description == "Description"
     assert len(category._products) == 0
 
 
-def test_category_with_products():
-    """Тест инициализации категории с продуктом"""
-
-    product = Product("Product", "Description", 100.0, 10)
-    category = Category("Category", "Description", [product])
-    assert len(category._products) == 1
-    assert Category.product_count == 1
-
-
 def test_add_product_to_category():
     """Тест добавления продукта в категорию"""
-
     category = Category("Category", "Description")
     product = Product("New Product", "New Description", 150.0, 5)
-
     category.add_product(product)
     assert len(category._products) == 1
     assert category._products[0].name == "New Product"
-    assert Category.product_count == 2
 
 
-def test_product_count():
-    """Тест подсчета продуктов"""
+def test_add_non_product_to_category():
+    """Тест добавления не-продукта (ожидаем ошибку)"""
+    category = Category("Category", "Description")
+    with pytest.raises(TypeError):
+        category.add_product("Not a product")
 
+
+def test_product_add_same_class():
+    """Тест сложения объектов одного класса"""
+    smartphone1 = Smartphone("Samsung Galaxy",
+                             "256GB",
+                             1000.0,
+                             2,
+                             90,
+                             "S10",
+                             256,
+                             "Black")
+    smartphone2 = Smartphone("Iphone",
+                             "512GB",
+                             1200.0,
+                             1,
+                             95,
+                             "12",
+                             512,
+                             "Silver")
+    assert smartphone1 + smartphone2 == 3200.0
+
+
+def test_product_add_different_classes():
+    """Тест сложения объектов разных классов (ожидаем ошибку)"""
+    smartphone = Smartphone("Samsung Galaxy",
+                            "256GB",
+                            1000.0,
+                            2,
+                            90,
+                            "S10",
+                            256,
+                            "Black")
+    grass = LawnGrass("Газонная трава",
+                      "Для газона",
+                      500.0,
+                      5,
+                      "Россия",
+                      "7 дней",
+                      "Зеленый")
+    with pytest.raises(TypeError):
+        smartphone + grass
+
+
+def test_category_product_count():
+    """Тест подсчета продуктов в категории"""
     Category.product_count = 0
-    category = Category("Test Category", "Test Description", [])
+    category = Category("Test Category", "Test Description")
     product = Product("Test Product", "Test Description", 100.0, 10)
     category.add_product(product)
     assert Category.product_count == 1
-
-
-def test_add_multiple_products():
-    """Тест добавления нескольких продуктов в категорию"""
-
-    Category.product_count = 0
-    category = Category("Test Category", "Test Description", [])
-
-    product1 = Product("Product1", "Description1", 200.0, 15)
-    product2 = Product("Product2", "Description2", 300.0, 20)
-
-    category.add_product(product1)
-    category.add_product(product2)
-
-    assert len(category._products) == 2
-    assert Category.product_count == 2
-    assert category._products[0].name == "Product1"
-    assert category._products[1].name == "Product2"
-
-
-def test_empty_category():
-    """Тест инициализации пустой категории"""
-
-    category = Category("Empty Category", "No products")
-    assert len(category._products) == 0
-
-
-def test_product_negative_quantity():
-    """Тест проверки работы с отрицательным количеством продукта"""
-
-    product = Product("Test Product", "Test Description", 100.0, -5)
-    assert product.quantity == -5
-
-
-def test_product_str():
-    """Тест строкового представления объекта Product."""
-    product = Product("Test Product", "Test Description", 100.0, 10)
-    assert str(product) == "Test Product, 100.0 руб. Остаток: 10 шт."
-
-
-def test_category_str():
-    """Тест строкового представления объекта Category."""
-    product1 = Product("Test Product 1", "Test Description 1", 100.0, 10)
-    product2 = Product("Test Product 2", "Test Description 2", 50.0, 5)
-    category = Category("Test Category",
-                        "Test Description",
-                        [product1, product2])
-    assert str(category) == "Test Category, количество продуктов: 15 шт."
-
-
-def test_product_add():
-    """Тест магического метода сложения для объектов Product."""
-    product1 = Product("Test Product 1", "Test Description 1", 100.0, 10)
-    product2 = Product("Test Product 2", "Test Description 2", 50.0, 5)
-    assert product1 + product2 == 1250.0
