@@ -1,4 +1,41 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class BaseProduct(ABC):
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @property
+    @abstractmethod
+    def price(self):
+        pass
+
+    @price.setter
+    @abstractmethod
+    def price(self, new_price):
+        pass
+
+
+class ProductCreationMixin:
+    name: str
+    price: float
+    description: str
+    quantity: int
+
+    def __init__(self):
+        super().__init__()
+        print(
+            f"Создан объект класса {self.__class__.__name__} с параметрами: {self.name}, {self.price},"
+            f" {self.description},"
+            f" {self.quantity}")
+
+
+class Product(ProductCreationMixin, BaseProduct):
     """Класс для представления продукта"""
 
     def __init__(self, name, description, price, quantity):
@@ -6,6 +43,7 @@ class Product:
         self.description = description
         self.__price = price  # приват
         self.quantity = quantity
+        super().__init__()
 
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
@@ -31,7 +69,7 @@ class Smartphone(Product):
     """Класс для представления смартфона"""
 
     def __init__(
-        self,
+            self,
             name,
             description,
             price,
@@ -52,7 +90,7 @@ class LawnGrass(Product):
     """Класс для представления газонной травы"""
 
     def __init__(
-        self,
+            self,
             name,
             description,
             price,

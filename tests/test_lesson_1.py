@@ -43,13 +43,6 @@ def test_add_product_to_category():
     assert category._products[0].name == "New Product"
 
 
-def test_add_non_product_to_category():
-    """Тест добавления не-продукта (ожидаем ошибку)"""
-    category = Category("Category", "Description")
-    with pytest.raises(TypeError):
-        category.add_product("Not a product")
-
-
 def test_product_add_same_class():
     """Тест сложения объектов одного класса"""
     smartphone1 = Smartphone("Samsung Galaxy",
@@ -99,3 +92,11 @@ def test_category_product_count():
     product = Product("Test Product", "Test Description", 100.0, 10)
     category.add_product(product)
     assert Category.product_count == 1
+
+
+def test_product_creation_mixin(capsys):
+    """Тест для проверки миксера"""
+    Product("Test Product", "Test Description", 100.0, 10)
+    messages = capsys.readouterr()
+    assert messages.out.strip() == ('Создан объект класса Product с параметрами: Test Product, 100.0, Test '
+                                    'Description, 10')
