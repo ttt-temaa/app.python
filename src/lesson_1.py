@@ -30,7 +30,8 @@ class ProductCreationMixin:
     def __init__(self):
         super().__init__()
         print(
-            f"Создан объект класса {self.__class__.__name__} с параметрами: {self.name}, {self.price},"
+            f"Создан объект класса {self.__class__.__name__}"
+            f" с параметрами: {self.name}, {self.price},"
             f" {self.description},"
             f" {self.quantity}")
 
@@ -39,6 +40,9 @@ class Product(ProductCreationMixin, BaseProduct):
     """Класс для представления продукта"""
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ValueError("Товар с "
+                             "нулевым количеством не может быть добавлен")
         self.name = name
         self.description = description
         self.__price = price  # приват
@@ -130,6 +134,16 @@ class Category:
             )
         self._products.append(product)
         Category.product_count += 1
+
+    def middle_price(self):
+        """Подсчет среднего ценника товаров в категории"""
+        try:
+            total_price = sum([product.price
+                               for product in self._products])
+            return total_price / len(self._products) if (
+                    len(self._products) > 0) else 0
+        except ZeroDivisionError:
+            return 0
 
     @property
     def products(self):

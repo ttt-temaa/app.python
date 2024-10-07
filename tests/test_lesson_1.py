@@ -12,6 +12,12 @@ def test_product_initialization():
     assert product.quantity == 10
 
 
+def test_zero_quantity():
+    """Тест для проверки ошибки при нулевом количестве"""
+    with pytest.raises(ValueError):
+        Product("Invalid Product", "Description", 100.0, 0)
+
+
 def test_product_price_setter_positive():
     """Тест работы сеттера цены с корректным значением"""
     product = Product("Product", "Description", 100.0, 10)
@@ -24,6 +30,20 @@ def test_product_price_setter_negative():
     product = Product("Product", "Description", 100.0, 10)
     product.price = -50.0
     assert product.price == 100.0
+
+
+def test_category_middle_price():
+    """Тест среднего ценника для категории"""
+    product1 = Product("Product 1", "Description", 100.0, 5)
+    product2 = Product("Product 2", "Description", 200.0, 8)
+    category = Category("Category", "Description", [product1, product2])
+    assert category.middle_price() == 150.0
+
+
+def test_category_middle_price_empty():
+    """Тест среднего ценника для пустой категории"""
+    category = Category("Empty Category", "Description", [])
+    assert category.middle_price() == 0
 
 
 def test_category_initialization():
@@ -96,7 +116,11 @@ def test_category_product_count():
 
 def test_product_creation_mixin(capsys):
     """Тест для проверки миксера"""
-    Product("Test Product", "Test Description", 100.0, 10)
+    Product("Test Product",
+            "Test Description",
+            100.0, 10)
     messages = capsys.readouterr()
-    assert messages.out.strip() == ('Создан объект класса Product с параметрами: Test Product, 100.0, Test '
+    assert messages.out.strip() == ('Создан объект класса '
+                                    'Product с параметрами:'
+                                    ' Test Product, 100.0, Test '
                                     'Description, 10')
