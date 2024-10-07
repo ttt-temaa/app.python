@@ -1,9 +1,10 @@
-from src.lesson_1 import Category, Product
+import pytest
+
+from src.lesson_1 import Category, LawnGrass, Product, Smartphone
 
 
 def test_product_initialization():
     """Тест инициализации продукта"""
-
     product = Product("Product", "Description", 100.0, 10)
     assert product.name == "Product"
     assert product.description == "Description"
@@ -11,85 +12,115 @@ def test_product_initialization():
     assert product.quantity == 10
 
 
+def test_zero_quantity():
+    """Тест для проверки ошибки при нулевом количестве"""
+    with pytest.raises(ValueError):
+        Product("Invalid Product", "Description", 100.0, 0)
+
+
+def test_product_price_setter_positive():
+    """Тест работы сеттера цены с корректным значением"""
+    product = Product("Product", "Description", 100.0, 10)
+    product.price = 200.0
+    assert product.price == 200.0
+
+
+def test_product_price_setter_negative():
+    """Тест работы сеттера цены с отрицательным значением"""
+    product = Product("Product", "Description", 100.0, 10)
+    product.price = -50.0
+    assert product.price == 100.0
+
+
+def test_category_middle_price():
+    """Тест среднего ценника для категории"""
+    product1 = Product("Product 1", "Description", 100.0, 5)
+    product2 = Product("Product 2", "Description", 200.0, 8)
+    category = Category("Category", "Description", [product1, product2])
+    assert category.middle_price() == 150.0
+
+
+def test_category_middle_price_empty():
+    """Тест среднего ценника для пустой категории"""
+    category = Category("Empty Category", "Description", [])
+    assert category.middle_price() == 0
+
+
 def test_category_initialization():
     """Тест инициализации категории без продуктов"""
-
     category = Category("Category", "Description")
     assert category.name == "Category"
     assert category.description == "Description"
-    assert len(category.products) == 0
-
-
-def test_category_with_products():
-    """Тест инициализации категории с продуктом"""
-
-    product = Product("Product", "Description", 100.0, 10)
-    category = Category("Category", "Description", [product])
-    assert len(category.products) == 1
-    assert Category.product_count == 1
+    assert len(category._products) == 0
 
 
 def test_add_product_to_category():
     """Тест добавления продукта в категорию"""
-
     category = Category("Category", "Description")
     product = Product("New Product", "New Description", 150.0, 5)
-
-    # Проверяем, что продукт добавляется корректно
     category.add_product(product)
-    assert len(category.products) == 1
-    assert category.products[0].name == "New Product"
-    assert Category.product_count == 2
+    assert len(category._products) == 1
+    assert category._products[0].name == "New Product"
 
 
-def test_category_count():
-    """Тест подсчета категорий"""
-    Category.category_count = 0
-    _ = Category("Category1", "Description1")
-    _ = Category("Category2", "Description2")
-    assert Category.category_count == 2
+def test_product_add_same_class():
+    """Тест сложения объектов одного класса"""
+    smartphone1 = Smartphone("Samsung Galaxy",
+                             "256GB",
+                             1000.0,
+                             2,
+                             90,
+                             "S10",
+                             256,
+                             "Black")
+    smartphone2 = Smartphone("Iphone",
+                             "512GB",
+                             1200.0,
+                             1,
+                             95,
+                             "12",
+                             512,
+                             "Silver")
+    assert smartphone1 + smartphone2 == 3200.0
 
 
-def test_product_count():
-    """Тест подсчета продуктов"""
+def test_product_add_different_classes():
+    """Тест сложения объектов разных классов (ожидаем ошибку)"""
+    smartphone = Smartphone("Samsung Galaxy",
+                            "256GB",
+                            1000.0,
+                            2,
+                            90,
+                            "S10",
+                            256,
+                            "Black")
+    grass = LawnGrass("Газонная трава",
+                      "Для газона",
+                      500.0,
+                      5,
+                      "Россия",
+                      "7 дней",
+                      "Зеленый")
+    with pytest.raises(TypeError):
+        smartphone + grass
+
+
+def test_category_product_count():
+    """Тест подсчета продуктов в категории"""
     Category.product_count = 0
-    category = Category("Test Category", "Test Description", [])
+    category = Category("Test Category", "Test Description")
     product = Product("Test Product", "Test Description", 100.0, 10)
     category.add_product(product)
     assert Category.product_count == 1
 
 
-def test_add_multiple_products():
-    """Тест добавления нескольких продуктов в категорию"""
-    Category.product_count = 0
-    category = Category("Test Category", "Test Description", [])
-
-    # Добавляем несколько продуктов
-    product1 = Product("Product1", "Description1", 200.0, 15)
-    product2 = Product("Product2", "Description2", 300.0, 20)
-    category.add_product(product1)
-    category.add_product(product2)
-
-    assert len(category.products) == 2
-    assert Category.product_count == 2
-    assert category.products[0].name == "Product1"
-    assert category.products[1].name == "Product2"
-
-
-def test_empty_category():
-    """Тест инициализации пустой категории """
-    category = Category("Empty Category", "No products")
-    assert len(category.products) == 0
-
-
-def test_product_negative_price():
-    """Тест проверки работы с отрицательной ценой продукта"""
-    product = Product("Test Product", "Test Description", -50.0, 10)
-    assert product.price == -50.0
-    assert product.quantity == 10
-
-
-def test_product_negative_quantity():
-    """Тест проверки работы с отрицательным количеством продукта"""
-    product = Product("Test Product", "Test Description", 100.0, -5)
-    assert product.quantity == -5
+def test_product_creation_mixin(capsys):
+    """Тест для проверки миксера"""
+    Product("Test Product",
+            "Test Description",
+            100.0, 10)
+    messages = capsys.readouterr()
+    assert messages.out.strip() == ('Создан объект класса '
+                                    'Product с параметрами:'
+                                    ' Test Product, 100.0, Test '
+                                    'Description, 10')
